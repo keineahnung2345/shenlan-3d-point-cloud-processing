@@ -18,11 +18,11 @@
 
 # 获取点云分类数据集
 
-跟第六次作业一样，本次作业仍是在https://github.com/sshaoshuai/PointRCNN这个开源项目的基础上进行的。
+跟第六次作业一样，本次作业仍是在[sshaoshuai/PointRCNN](https://github.com/sshaoshuai/PointRCNN)这个开源项目的基础上进行的。
 
 ## 读取点云及标签
 
-从点云中框出物体的代码是参考自https://github.com/sshaoshuai/PointRCNN/issues/148，在这个issue当中，他做了很好的可视化，便于及时查看效果。但正如issue里所提到的，画出来的框都在很奇怪的位置。关于这一点，在读了跟数据载入相关的代码后，终于找到了解决方案。
+从点云中框出物体的代码是参考自[Visualization issue](https://github.com/sshaoshuai/PointRCNN/issues/148)，在这个issue当中，他做了很好的可视化，便于及时查看效果。但正如issue里所提到的，画出来的框都在很奇怪的位置。关于这一点，在读了跟数据载入相关的代码后，终于找到了解决方案。
 
 在`kitti_rcnn_dataset.py`里有：
 
@@ -66,7 +66,7 @@ corners3d = boxes3d_to_corners3d(boxes3d)
 
 得到校正过的点云及标签后，接下来是实际把点云中被框住的点取出来，作为等会训练PointNet的样本。因此我们需要一个能快速分辨哪些点落在长方体内算法。在这一步我做了两种尝试。
 
-第一个方法参考自https://stackoverflow.com/questions/29311682/finding-if-point-is-in-3d-poly-in-python，是在三维空间找出`corners3d`的ConvexHull，然后对点云中的每个点，都将它加入ConvexHull试试，如果ConvexHull没有改变，就说明该点落在该ConvexHull内：
+第一个方法参考自[Finding if point is in 3D poly in python](https://stackoverflow.com/questions/29311682/finding-if-point-is-in-3d-poly-in-python)，是在三维空间找出`corners3d`的ConvexHull，然后对点云中的每个点，都将它加入ConvexHull试试，如果ConvexHull没有改变，就说明该点落在该ConvexHull内：
 
 ```python
 def pnt_in_cvex_hull_1(hull, pnt):
@@ -85,7 +85,7 @@ for i, pt in tqdm(enumerate(pts_rect)):
 
 但是这种做法速度太慢，所以后来采用第二种方法。
 
-因为直接在三维空间中做运算速度太慢，所以我想到了第二种做法：先将点云及`corners3d`投影到水平面上，然后判断每个点是否落在长方形内，对于落在长方形内的点，再判断它们在高度方向上是否满足要求。其中"判断每个点是否落在长方形内"的代码是参考自https://stackoverflow.com/questions/21339448/how-to-get-list-of-points-inside-a-polygon-in-python。
+因为直接在三维空间中做运算速度太慢，所以我想到了第二种做法：先将点云及`corners3d`投影到水平面上，然后判断每个点是否落在长方形内，对于落在长方形内的点，再判断它们在高度方向上是否满足要求。其中"判断每个点是否落在长方形内"的代码是参考自[How to get list of points inside a polygon in python?](https://stackoverflow.com/questions/21339448/how-to-get-list-of-points-inside-a-polygon-in-python)。
 
 ```python
 corner2d = corner3d[:,[0,2]]
@@ -131,7 +131,7 @@ cloud = cloud * ratio
 
 将目标点数设为1000个点。
 
-resample时用到的pcl python wrapper是https://github.com/strawlab/python-pcl，本来想对点数少于1000的点云做上采样，但是发现python版本的`MovingLeastSquares`没有`setUpsamplingMethod`方法，因此作罢。仅对点数超过1000的点云进行下采样。
+resample时用到的pcl python wrapper是[strawlab/python-pcl](https://github.com/strawlab/python-pcl)，本来想对点数少于1000的点云做上采样，但是发现python版本的`MovingLeastSquares`没有`setUpsamplingMethod`方法，因此作罢。仅对点数超过1000的点云进行下采样。
 
 下采样使用`VoxelGrid`：
 
@@ -275,7 +275,7 @@ class InputDropout(object):
 
 目前只能让网络接受相同大小的输入。较理想的做法是每个batch都用不一样的输入大小，让网络更加robust。可能的做法参考：
 
-https://discuss.pytorch.org/t/how-to-create-a-dataloader-with-variable-size-input/8278/3
+[How to create a dataloader with variable-size input](https://discuss.pytorch.org/t/how-to-create-a-dataloader-with-variable-size-input/8278)
 
 ## Normalize
 
@@ -349,7 +349,7 @@ class AddGaussianNoise(object):
 
 统计训练集里4个类别的数量，分别是：Others:336, Vehicle:3919, Pedestrian:32, Cyclist:40，类别严重不均衡。
 
-为了处理类别不均衡的问题，参考https://discuss.pytorch.org/t/balanced-sampling-between-classes-with-torchvision-dataloader/2703/3，为每一个sample计算它应有的weight，然后在使用`torch.utils.data.DataLoader`时指定`sampler`参数。
+为了处理类别不均衡的问题，参考[Balanced Sampling between classes with torchvision DataLoader](https://discuss.pytorch.org/t/balanced-sampling-between-classes-with-torchvision-dataloader/2703/3)，为每一个sample计算它应有的weight，然后在使用`torch.utils.data.DataLoader`时指定`sampler`参数。
 
 ```python
 def make_weights_for_balanced_classes(classes, nclasses):
@@ -417,13 +417,13 @@ class PointNetSmall(nn.Module):
 
 ### meder411/PointNet-PyTorch
 
-拿自己建的网络做了许多尝试还是得不到好的结果，所以后来改用迁移学习的方法。网上找不到人车的分类模型，最接近的只有https://github.com/meder411/PointNet-PyTorch所提供的pretrained的modelnet40模型。
+拿自己建的网络做了许多尝试还是得不到好的结果，所以后来改用迁移学习的方法。网上找不到人车的分类模型，最接近的只有[meder411/PointNet-PyTorch](https://github.com/meder411/PointNet-PyTorch)所提供的pretrained的modelnet40模型。
 
 但是该项目是基于Python2，并且只接受off格式的输入，因此还没来得及尝试。
 
 ### fxia22/pointnet.pytorch
 
-https://github.com/keineahnung2345/pointnet.pytorch.git
+我自己的改过的版本[keineahnung2345/pointnet.pytorch](https://github.com/keineahnung2345/pointnet.pytorch/tree/modelnet40_normalize_resampled)，能接受modelnet40。
 
 使用modelnet40数据集来预先训练模型。
 
@@ -639,7 +639,7 @@ count of different classes [336, 3919, 32, 40]
 
 ## 训练SVM
 
-可参考http://www.yhqiao.xyz/index.php/2020/03/26/svm/
+可参考[基于SVM的三维点云分类（建筑，树木）](http://www.yhqiao.xyz/index.php/2020/03/26/svm/)
 
 # 测试
 
@@ -708,7 +708,7 @@ classid, score = evaluate_one(pn, pts_lidar)
 
 ## 将PointNet的输出转成kitti的格式
 
-参考https://github.com/sshaoshuai/PointRCNN/blob/master/tools/eval_rcnn.py里的写法，它将一个大点云里检测出来的多个物体收集到一个N*7的numpy array里；将分数则收集到一个长度为N的numpy array里，然后调用`save_kittti_format`函数。
+参考[sshaoshuai/PointRCNN/blob/master/tools/eval_rcnn.py](https://github.com/sshaoshuai/PointRCNN/blob/master/tools/eval_rcnn.py)里的写法，它将一个大点云里检测出来的多个物体收集到一个N*7的numpy array里；将分数则收集到一个长度为N的numpy array里，然后调用`save_kittti_format`函数。
 
 这里如法炮制，需要将检测到的物体的类别，分数及bounding box传入（改写过的）`save_kitti_format`。
 
