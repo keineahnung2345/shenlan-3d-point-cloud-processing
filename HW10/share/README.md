@@ -14,7 +14,7 @@
 4. 利用PointNet或PointNet++进行分类
 5. 将神经网络的输出转成KITTI的格式
 
-个人觉得本次作业中最难的部分是如何从KITTI数据集中整理出4分类的数据集，以及将神经网络的输出转成KITTI格式，因为网上很少这部分的讨论，最后我是去读了https://github.com/sshaoshuai/PointRCNN里相关的源码才做出来的。
+个人觉得本次作业中最难的部分是如何从KITTI数据集中整理出4分类的数据集，以及将神经网络的输出转成KITTI格式，因为网上很少这部分的讨论，最后我是去读了[sshaoshuai/PointRCNN](https://github.com/sshaoshuai/PointRCNN)里相关的源码才做出来的。
 
 训练的第一步是“从KITTI的3d目标检测数据集中整理出4分类的数据集”，需要读取点云及标签（三维的框）。
 
@@ -40,7 +40,7 @@
 
 有了点云及标签后，下一步是实际把点云中被框住的点取出来，作为等会训练PointNet的样本。这一步在`kitti_rcnn_dataset.py`的`get_rcnn_sample_info`函数中已经有实现了。但这件事我是在作业完成后经助教提醒才发现的，所以下面还是分享我原来的做法：
 
-先将点云及`corners3d`投影到水平面上，然后判断每个点是否落在长方形内，对于落在长方形内的点，再判断它们在高度方向上是否满足要求。其中"判断每个点是否落在长方形内"的代码是参考自https://stackoverflow.com/questions/21339448/how-to-get-list-of-points-inside-a-polygon-in-python。
+先将点云及`corners3d`投影到水平面上，然后判断每个点是否落在长方形内，对于落在长方形内的点，再判断它们在高度方向上是否满足要求。其中"判断每个点是否落在长方形内"的代码是参考自[How to get list of points inside a polygon in python?](https://stackoverflow.com/questions/21339448/how-to-get-list-of-points-inside-a-polygon-in-python)。
 
 ![image-20210112113052823](image-20210112113052823.png)
 
@@ -80,7 +80,7 @@
 
 ![image-20210112140344508](image-20210112140344508.png)
 
-这里的代码是参考https://discuss.pytorch.org/t/balanced-sampling-between-classes-with-torchvision-dataloader/2703/3，核心思想是让样本数较多的类别有较低的权重，使得模型在训练时能均匀地看到各类别的样本。
+这里的代码是参考[Balanced Sampling between classes with torchvision DataLoader](https://discuss.pytorch.org/t/balanced-sampling-between-classes-with-torchvision-dataloader/2703/3)，核心思想是让样本数较多的类别有较低的权重，使得模型在训练时能均匀地看到各类别的样本。
 
 以上的准备工作做完后，就可以开始训练模型了。
 
@@ -102,7 +102,7 @@
 
 ![image-20210112141241336](image-20210112141241336.png)
 
-最后一步是将神经网络的输出转成KITTI的格式，这里我是参考https://github.com/sshaoshuai/PointRCNN/blob/master/tools/eval_rcnn.py里的写法，先准备`save_kitti_format`函数所需要的参数，然后再调用`save_kitti_format`函数。
+最后一步是将神经网络的输出转成KITTI的格式，这里我是参考[eval_rcnn.py](https://github.com/sshaoshuai/PointRCNN/blob/master/tools/eval_rcnn.py)里的写法，先准备`save_kitti_format`函数所需要的参数，然后再调用`save_kitti_format`函数。
 
 以下是我改写过的`save_kitti_format`函数：
 
