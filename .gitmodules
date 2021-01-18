@@ -1,0 +1,3 @@
+[submodule "materials"]
+	path = materials
+	url = https://github.com/keineahnung2345/shenlan-3d-point-cloud-processing-materials
