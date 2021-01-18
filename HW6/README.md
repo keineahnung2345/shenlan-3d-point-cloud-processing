@@ -1,6 +1,6 @@
 # p.55 formula
 
-![VoxelNet_3DCNN](C:\Users\mimif\Downloads\shenlan-3d-point-cloud-processing\HW6\VoxelNet_3DCNN.PNG)
+![VoxelNet_3DCNN](VoxelNet_3DCNN.PNG)
 
 - 卷积输出大小计算公式：${\lfloor}(W+2P-F)/S{\rfloor}+1$
 - 输入：$128*10*400*352$
